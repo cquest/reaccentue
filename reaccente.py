@@ -1,6 +1,4 @@
-import sys
-import select
-import re
+import sys, os.path, time, re, select, json
 from unidecode import unidecode
 
 
@@ -46,9 +44,21 @@ def reaccente(maj):
     return maj
 
 
-dico = dict()
-dico = load_dico('fr-toutesvariantes.dic', dico)
-dico = load_dico('complements.dic', dico)
+dico = None
+try:
+    if os.path.getmtime('dico/fr-toutesvariantes.dic') < os.path.getmtime('dico/cache'):
+        with open('dico/cache', 'r') as dico_cache:
+            dico = json.loads(dico_cache.read())
+except:
+    pass
+
+if dico is None:
+    dico = dict()
+    dico = load_dico('dico/fr-toutesvariantes.dic',  dico)
+    dico = load_dico('dico/complements.dic', dico)
+    with open('dico/cache', 'w') as dico_cache:
+        dico_cache.write(json.dumps(dico))
+
 articles = ['le', 'la', 'les', 'un',  'une', 'des', 'au', 'du', 'de', 'aux']
 
 if __name__ == "__main__":
