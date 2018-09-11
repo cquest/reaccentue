@@ -23,9 +23,15 @@ def load_dico(fichier, dico):
             # pluriels et variantes
             pluriel = re.sub(r'.*/', '', mot)
             if pluriel == 'X.':
-                add_dico(re.sub(r'l$', 'ux', m), dico)
-            elif pluriel == 'S.':
-                add_dico(re.sub(r'$', 's', m), dico)
+                add_dico(re.sub(r'i?l$', 'ux', m), dico)
+                add_dico(re.sub(r'[aeoœ]u$', '\1x', m), dico)
+            elif pluriel in ['S.', 'S=']:
+                add_dico(re.sub(r'[^sxz]$', '\1s', m), dico)
+            elif pluriel in ['I.']:
+                add_dico(re.sub(r'[^sxz]$', '\1s', m), dico)
+                add_dico(re.sub(r'a$', 'e', m), dico)
+                add_dico(re.sub(r'([eo]|um)$', 'i', m), dico)
+                add_dico(re.sub(r'um$', 'a', m), dico)
             elif pluriel == 'W.':
                 add_dico(re.sub(r'e$', '', m), dico)
                 add_dico(re.sub(r'e$', 'es', m), dico)
