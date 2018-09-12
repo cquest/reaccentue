@@ -1,4 +1,10 @@
-import sys, os.path, time, re, select, json
+import sys
+import os.path
+import re
+import select
+import csv
+import pickle
+
 from unidecode import unidecode
 
 
@@ -52,9 +58,10 @@ def reaccente(maj):
 
 dico = None
 try:
-    if os.path.getmtime('dico/fr-toutesvariantes.dic') < os.path.getmtime('dico/cache'):
-        with open('dico/cache', 'r') as dico_cache:
-            dico = json.loads(dico_cache.read())
+    if (os.path.getmtime('dico/fr-toutesvariantes.dic') <
+        os.path.getmtime('dico/cache.p')):
+        with open('dico/cache.p', 'rb') as dico_cache:
+                dico = pickle.load(dico_cache)
 except:
     pass
 
@@ -65,7 +72,11 @@ if dico is None:
     with open('dico/cache', 'w') as dico_cache:
         dico_cache.write(json.dumps(dico))
 
-articles = ['le', 'la', 'les', 'un',  'une', 'des', 'au', 'du', 'de', 'aux']
+articles = ['le', 'la', 'les',
+            'un',  'une', 'des',
+            'à', 'au', 'aux',
+            'du', 'de',
+            'et', 'ou']
 
 if __name__ == "__main__":
     if len(sys.argv) == 1:
