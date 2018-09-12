@@ -4,6 +4,8 @@ Module python 3.x pour ré-accentuer du texte à partir d'un dictionnaire au for
 
 Le dictionnaire par défaut provient de http://www.dicollecte.org
 
+Il est chargé initialement à partir des fichier ".dic" et ".aff" pour générer les variations de suffixes (féminin, pluriel, conjugaisons) et mis en cache pour les utilisations suivantes.
+
 La capitalisation suit les règles utilisées en France par OpenStreetMap.
 
 
