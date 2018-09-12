@@ -77,7 +77,7 @@ def load_dico(fichier, dico):
     return dico
 
 
-def reaccente(maj):
+def reaccentue(maj):
     for mot in maj.split():
         if mot.lower() in articles:
             maj = maj.replace(mot, mot.lower())
@@ -115,10 +115,21 @@ if __name__ == "__main__":
         if select.select([sys.stdin, ], [], [], 0.0)[0]:
             lines = sys.stdin.readlines()
             for l in lines:
-                print(reaccente(l.replace('\n', '')))
+                print(reaccentue(l.replace('\n', '')))
         else:
-            print("""Usage:  reaccente.py texte ou fichier
-        reaccente.py 'BOULEVARD DU MARECHAL JEAN MARIE DE LATTRE DE TASSIGNY'
-        reaccente.py fichier.txt""")
+            print("""Usage:  reaccentue.py texte ou fichier
+        reaccentue.py 'BOULEVARD DU MARECHAL JEAN MARIE DE LATTRE DE TASSIGNY'
+        reaccentue.py fichier.csv nom_colonne""")
     else:
-        print(reaccente(sys.argv[1]))
+        if bool(re.search('.csv$', sys.argv[1])):
+            with open(sys.argv[1], 'r') as in_file:
+                csv_in = csv.DictReader(in_file)
+                csv_out = csv.DictWriter(sys.stdout,
+                                         fieldnames=csv_in.fieldnames)
+                csv_out.writerow(dict((fn, fn) for fn in csv_in.fieldnames))
+                for row in csv_in:
+                    row[sys.argv[2]] = reaccentue(row[sys.argv[2]])
+                    csv_out.writerow(row)
+
+        else:
+            print(reaccentue(sys.argv[1]))
