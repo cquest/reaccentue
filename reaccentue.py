@@ -99,10 +99,10 @@ except:
 
 if dico is None:
     dico = dict()
-    dico = load_dico('dico/fr-toutesvariantes.dic',  dico)
-    dico = load_dico('dico/complements.dic', dico)
-    with open('dico/cache', 'w') as dico_cache:
-        dico_cache.write(json.dumps(dico))
+    dico = load_dico('dico/fr-toutesvariantes',  dico)
+    dico = load_dico('dico/complements', dico)
+    with open('dico/cache.p', 'wb') as dico_cache:
+        pickle.dump(dico, dico_cache)
 
 articles = ['le', 'la', 'les',
             'un',  'une', 'des',
