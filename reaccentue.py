@@ -77,6 +77,12 @@ def load_dico(fichier, dico):
     return dico
 
 
+def reduce_dico():
+    # on élimine les entrées uniques sans accent
+    global dico
+    dico = {key:val for key, val in dico.items() if len(val)>1 or val[0]!=unidecode(val[0])}
+
+
 def reaccentue(maj):
     for mot in maj.split():
         if mot.lower() in articles:
@@ -101,6 +107,7 @@ if dico is None:
     dico = dict()
     dico = load_dico('dico/fr-toutesvariantes',  dico)
     dico = load_dico('dico/complements', dico)
+    reduce_dico()
     with open('dico/cache.p', 'wb') as dico_cache:
         pickle.dump(dico, dico_cache)
 
@@ -109,6 +116,7 @@ articles = ['le', 'la', 'les',
             'à', 'au', 'aux',
             'du', 'de',
             'et', 'ou']
+
 
 if __name__ == "__main__":
     if len(sys.argv) == 1:
