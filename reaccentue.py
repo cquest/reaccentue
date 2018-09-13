@@ -83,21 +83,45 @@ def load_dico(fichier, dico):
 def reduce_dico():
     # on élimine les entrées uniques sans accent
     global dico
-    dico = {key:val for key, val in dico.items() if len(val)>1 or val[0]!=unidecode(val[0])}
+    dico = {key:val for key, val in dico.items()
+            if len(val)>1 or val[0]!=unidecode(val[0])}
+
+    try:
+        # on complète avec les fréquences de doublets avec mot précédent
+        with gzip.open('dico/freq5.pz', 'rb') as cache:
+            freq = pickle.load(cache)
+        for f in freq:
+            mots = unidecode(f).upper().split()
+            if len(mots)>1 and mots[1] in dico:
+                dico[f] = freq[f]
+    except:
+        pass
 
 
 def reaccentue(maj):
+    prev = None
     for mot in maj.split():
         if mot.lower() in articles:
             maj = maj.replace(mot, mot.lower())
         elif mot.upper() in dico and len(dico[mot.upper()]) == 1:
             maj = maj.replace(mot, dico[mot.upper()][0].capitalize())
         else:
-            maj = maj.replace(mot, mot.lower().capitalize())
+            if prev != None and mot.upper() in dico:
+                f = 0
+                for m in dico[mot.upper()]:
+                    if prev+' '+m in dico:
+                        if dico[prev+' '+m] > f:
+                            f = dico[prev+' '+m]
+                            mm = m
+                maj = maj.replace(mot, mm.lower().capitalize())
+            else:
+                maj = maj.replace(mot, mot.lower().capitalize())
+        prev = mot
     return maj
 
 
 dico = None
+freq = None
 try:
     if (os.path.getmtime('dico/fr-toutesvariantes.dic') <
         os.path.getmtime('dico/cache.pz')):
@@ -105,6 +129,7 @@ try:
                 dico = pickle.load(dico_cache)
 except:
     pass
+
 
 if dico is None:
     dico = dict()
@@ -119,6 +144,7 @@ articles = ['le', 'la', 'les',
             'à', 'au', 'aux',
             'du', 'de',
             'et', 'ou']
+
 
 if __name__ == "__main__":
     if len(sys.argv) == 1:
