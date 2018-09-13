@@ -86,16 +86,13 @@ def reduce_dico():
     dico = {key:val for key, val in dico.items()
             if len(val)>1 or val[0]!=unidecode(val[0])}
 
-    try:
-        # on complète avec les fréquences de doublets avec mot précédent
-        with gzip.open('dico/freq5.pz', 'rb') as cache:
-            freq = pickle.load(cache)
-        for f in freq:
-            mots = unidecode(f).upper().split()
-            if len(mots)>1 and mots[1] in dico:
-                dico[f] = freq[f]
-    except:
-        pass
+    # on complète avec les fréquences de doublets avec mot précédent
+    with gzip.open('dico/freq5.pz', 'rb') as cache:
+        freq = pickle.load(cache)
+    for f in freq:
+        mots = unidecode(f).upper().split()
+        if len(mots)>1 and mots[1] in dico:
+            dico[f] = freq[f]
 
 
 def reaccentue(maj):
@@ -106,17 +103,19 @@ def reaccentue(maj):
         elif mot.upper() in dico and len(dico[mot.upper()]) == 1:
             maj = maj.replace(mot, dico[mot.upper()][0].capitalize())
         else:
+            mm = None
             if prev != None and mot.upper() in dico:
                 f = 0
                 for m in dico[mot.upper()]:
-                    if prev+' '+m in dico:
-                        if dico[prev+' '+m] > f:
-                            f = dico[prev+' '+m]
+                    ml = m.lower()
+                    if prev+' '+ml in dico:
+                        if dico[prev+' '+ml] > f:
+                            f = dico[prev+' '+ml]
                             mm = m
-                maj = maj.replace(mot, mm.lower().capitalize())
-            else:
-                maj = maj.replace(mot, mot.lower().capitalize())
-        prev = mot
+            if mm is None:
+                    mm = mot
+            maj = maj.replace(mot, mm.lower().capitalize())
+        prev = mot.lower()
     return maj
 
 

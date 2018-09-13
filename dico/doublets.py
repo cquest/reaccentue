@@ -7,7 +7,7 @@ freq = dict()
 
 
 def update_freq(texte):
-    mots = re.sub(r"([=,:;\.'’•\(\)\[\]\{\}\-«»0-9]+)", ' | ', texte).split()
+    mots = re.sub(r"([=,:;\.'’•\(\)\[\]\{\}\-«»0-9]+)", ' | ', texte).lower().split()
     prev = None
     for mot in mots:
         if mot == '|':
@@ -33,6 +33,6 @@ with open('wikipediaUTF.txt','r') as wp:
 with gzip.open('freq.pz', 'wb') as cache:
         pickle.dump(freq, cache)
 # enregistrement limité aux entrées présentes plus de 5 fois
-f2 = {key:val for key, val in f.items() if val > 5}
+f2 = {key:val for key, val in freq.items() if val > 5}
 with gzip.open('freq5.pz', 'wb') as cache:
         pickle.dump(f2, cache)
