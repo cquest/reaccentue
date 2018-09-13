@@ -4,6 +4,7 @@ import re
 import select
 import csv
 import pickle
+import gzip
 
 from unidecode import unidecode
 
@@ -97,8 +98,8 @@ def reaccentue(maj):
 dico = None
 try:
     if (os.path.getmtime('dico/fr-toutesvariantes.dic') <
-        os.path.getmtime('dico/cache.p')):
-        with open('dico/cache.p', 'rb') as dico_cache:
+        os.path.getmtime('dico/cache.pz')):
+        with gzip.open('dico/cache.pz', 'rb') as dico_cache:
                 dico = pickle.load(dico_cache)
 except:
     pass
@@ -108,7 +109,7 @@ if dico is None:
     dico = load_dico('dico/fr-toutesvariantes',  dico)
     dico = load_dico('dico/complements', dico)
     reduce_dico()
-    with open('dico/cache.p', 'wb') as dico_cache:
+    with gzip.open('dico/cache.pz', 'wb') as dico_cache:
         pickle.dump(dico, dico_cache)
 
 articles = ['le', 'la', 'les',
@@ -116,7 +117,6 @@ articles = ['le', 'la', 'les',
             'à', 'au', 'aux',
             'du', 'de',
             'et', 'ou']
-
 
 if __name__ == "__main__":
     if len(sys.argv) == 1:
